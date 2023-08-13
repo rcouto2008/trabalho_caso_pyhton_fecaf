@@ -1,0 +1,307 @@
+import os
+from colorama import init, Fore
+ 
+init(autoreset=True)
+
+def adicionar_venda():
+    global estoque 
+    vendas_atual = []
+    while True:
+        produto = input("Digite o nome do produto: ")
+        quantidade = int(input("Digite a quantidade vendida: "))
+        valor_unitario = float(input("Digite o valor unitário do produto: "))
+
+    ####### Armazenar o item da venda temporariamente em uma lista #####
+        vendas_atual.append({"produto": produto, "quantidade": quantidade, "valor_unitario": valor_unitario})
+
+        continuar = input("Deseja adicionar mais itens à venda? (S/N): ")
+        if continuar.lower() != 's':
+            break
+    ###### Atualizar o estoque subtraindo a quantidade vendida #####
+    for item in vendas_atual:
+        produto = item['produto']
+        quantidade_vendida = item['quantidade']
+        estoque[produto]['quantidade'] -= quantidade_vendida
+
+    total_venda_atual = sum(item['quantidade'] * item['valor_unitario'] for item in vendas_atual)
+    print(f"Total da Venda Atual: R${total_venda_atual:.2f}")
+
+    ##### Adicionar a venda completa na lista de vendas #####
+    vendas.extend(vendas_atual)
+
+def excluir_venda():
+    listar_vendas()
+    if vendas:
+        index = int(input("Digite o número da venda que deseja excluir: "))
+        if 1 <= index <= len(vendas):
+            venda_excluida = vendas.pop(index - 1)
+            print(f"{Fore.LIGHTGREEN_EX}Venda excluída: Produto: {venda_excluida['produto']}, Quantidade: {venda_excluida['quantidade']}, Valor Unitário: R${venda_excluida['valor_unitario']:.2f}")
+        else:
+            print(f"{Fore.LIGHTRED_EX} Número de venda inválido!")
+    else:
+        print(f"{Fore.LIGHTRED_EX} Não existem vendas registradas.")
+
+def listar_vendas():
+    print("\nLista de Vendas:")
+    for i, venda in enumerate(vendas, 1):
+        print(f"{i}. Produto: {venda['produto']}, Quantidade: {venda['quantidade']}, Valor Unitário: R${venda['valor_unitario']:.2f}")
+
+def calcular_total_vendas():
+    total = sum(venda['quantidade'] * venda['valor_unitario'] for venda in vendas)
+    print(f"\nTotal de Vendas: R${total:.2f}")
+
+# # # # ======= Vendas Fim ====== # # #
+# # # # ===== Estoque Inicio ====== # # # # #
+def adicionar_produto():
+    produto = input("Digite o nome do produto: ")
+    if produto in estoque:
+        print(f"{Fore.LIGHTYELLOW_EX} Produto já cadastrado. Utilize a opção 'Atualizar Produto'.")
+        return
+    quantidade = int(input("Digite a quantidade em estoque: "))
+    valor_unitario = float(input("Digite o valor unitário do produto: "))
+
+    ##### Adicionar o produto ao estoque #####
+    estoque[produto] = {"quantidade": quantidade, "valor_unitario": valor_unitario}
+    print(f"{Fore.LIGHTGREEN_EX} Produto '{produto}' adicionado ao estoque.")
+
+def atualizar_produto():
+    produto = input("Digite o nome do produto que deseja atualizar: ")
+    if produto not in estoque:
+        print(f"{Fore.LIGHTRED_EX}Produto não encontrado.")
+        return
+
+    quantidade = int(input("Digite a nova quantidade em estoque: "))
+    valor_unitario = float(input("Digite o novo valor unitário do produto: "))
+
+    ##### Atualizar o produto no estoque ######
+    estoque[produto] = {"quantidade": quantidade, "valor_unitario": valor_unitario}
+    print(f"{Fore.LIGHTGREEN_EX} Produto '{produto}' atualizado no estoque.")
+
+def visualizar_estoque():
+    print("\nEstoque:")
+    for produto, info in estoque.items():
+        print(f"Produto: {produto}, Quantidade: {info['quantidade']}, Valor Unitário: R${info['valor_unitario']:.2f}")
+
+def deletar_produto():
+    produto = input("Digite o nome do produto que deseja excluir: ")
+    if produto not in estoque:
+        print(f"{Fore.LIGHTRED_EX}Produto não encontrado.")
+        return
+
+    ###### Remover o produto do estoque #####
+    del estoque[produto]
+    print(f"{Fore.LIGHTGREEN_EX}Produto '{produto}' excluído do estoque.")
+
+def pesquisar_produto():
+    produto = input("Digite o nome do produto que deseja pesquisar: ")
+    if produto not in estoque:
+        print(f"{Fore.LIGHTRED_EX} Produto não encontrado.")
+        return
+
+    ###### Exibir as informações do produto #####
+    info = estoque[produto]
+    print(f"\nProduto: {produto}, Quantidade: {info['quantidade']}, Valor Unitário: R${info['valor_unitario']:.2f}")
+
+# # # # ===== Estoque final ==== # # # #
+
+
+# # # # ========== cadastro de clientes =========== # # # # #
+def cadastro_cliente():
+    nome = input("Digite o nome completo: ")
+    if nome in cliente:
+        print(f"{Fore.LIGHTRED_EX}Cliente já cadastrado. Utilize a opção 'Atualizar Cadastro'.")
+        return
+
+    endereco = input("Digite o endereço completo: ")
+    telefone = input("Digite o telefone: ")
+
+    ##### Adicionar o nome ao cadastro #####
+    cliente[nome] = {"endereco": endereco, "telefone": telefone}
+    print(f"{Fore.LIGHTGREEN_EX}Cliente '{nome}' adicionado ao Cadastro.")
+
+def consultar_cadastro():
+    if not cliente:  # -->  Verifica se o dicionário cliente está vazio
+        print(f"{Fore.LIGHTRED_EX}Nenhum cliente cadastrado.")
+        return
+
+    print("\nCadastro de Clientes:")
+    for nome, info in cliente.items():
+        print(f"Nome: {nome}, Endereço: {info['endereco']}, Telefone: {info['telefone']}")
+
+def excluir_cadastro():
+    nome = input("Digite o nome completo do cliente que deseja excluir: ")
+    if nome in cliente:
+        del cliente[nome]
+        print(f"{Fore.LIGHTGREEN_EX}Cliente '{nome}' foi excluído do Cadastro.")
+    else:
+        print(f"{Fore.LIGHTRED_EX}Cliente '{nome}' não encontrado no Cadastro.")
+
+def pesquisar_cadastro():
+    nome = input("Digite o nome completo do cliente que deseja pesquisar: ")
+    if nome in cliente:
+        info = cliente[nome]
+        print(f"Informações do Cliente '{nome}':")
+        print(f"Endereço: {info['endereco']}")
+        print(f"Telefone: {info['telefone']}")
+    else:
+        print(f"{Fore.LIGHTRED_EX}Cliente '{nome}' não encontrado no Cadastro.")
+
+def atualizar_cadastro():
+    nome = input("Digite o nome completo do cliente que deseja atualizar: ")
+    if nome in cliente:
+        endereco = input("Digite o novo endereço completo: ")
+        telefone = input("Digite o novo telefone: ")
+        cliente[nome]["endereco"] = endereco
+        cliente[nome]["telefone"] = telefone
+        print(f"{Fore.LIGHTGREEN_EX}Cadastro do cliente '{nome}' atualizado com sucesso.")
+    else:
+        print(f"{Fore.LIGHTRED_EX}Cliente '{nome}' não encontrado no Cadastro.")
+
+# # # # === Limpar tela da aplicação === # # # #
+
+def limpar_tela():
+    os.system('cls' if os.name == "nt" else 'clear')
+
+# # # === Menu_venda === # # #
+
+def menu_vendas():
+    while True:
+        print(f"{Fore.LIGHTBLACK_EX}:.:.:.:: "f"{Fore.BLUE}RC Eletronicos - Gerenciador Vendas Version 1.0.0 "f"{Fore.LIGHTBLACK_EX}::.:.:.:.")
+        print(f"{Fore.LIGHTBLACK_EX}         Desenvolvido por Rodrigo Couto version 1.0.0\n")
+        print(f"\n{Fore.LIGHTBLACK_EX}.:.:: "f"{Fore.BLUE}Controle Vendas"f"{Fore.LIGHTBLACK_EX}::.:.\n")
+        print(f"{Fore.LIGHTYELLOW_EX}1."f"{Fore.LIGHTWHITE_EX} Adicionar Venda")
+        print(f"{Fore.LIGHTYELLOW_EX}2."f"{Fore.LIGHTWHITE_EX} Excluir Venda")
+        print(f"{Fore.LIGHTYELLOW_EX}3."f"{Fore.LIGHTWHITE_EX} Listar Vendas")
+        print(f"{Fore.LIGHTYELLOW_EX}4."f"{Fore.LIGHTWHITE_EX} Calcular Total do Dia")
+        print(f"{Fore.LIGHTYELLOW_EX}5."f"{Fore.LIGHTWHITE_EX} Voltar ao Menu Principal")
+
+        opcao = int(input(f"Escolha uma opção: "))
+
+        if opcao == 1:
+            limpar_tela()
+            adicionar_venda()
+        elif opcao == 2:
+            limpar_tela()
+            excluir_venda()
+        elif opcao == 3:
+            limpar_tela()
+            listar_vendas()
+        elif opcao == 4:
+            limpar_tela()
+            calcular_total_vendas()
+        elif opcao == 5:
+            limpar_tela()
+            break
+        else:
+            print(f"{Fore.LIGHTRED_EX} Opção inválida! Tente novamente.")
+
+# # # === menu estoque === # # #
+
+def menu_estoque():
+    while True:
+        print(f"{Fore.LIGHTBLACK_EX}:.:.:.:: "f"{Fore.BLUE}RC Eletronicos - Gerenciador Vendas Version 1.0.0 "f"{Fore.LIGHTBLACK_EX}::.:.:.:.")
+        print(f"{Fore.LIGHTBLACK_EX}         Desenvolvido por Rodrigo Couto version 1.0.0\n")
+        print(f"\n{Fore.LIGHTBLACK_EX}.:.:: "f"{Fore.BLUE}Controle de Estoque "f"{Fore.LIGHTBLACK_EX}::.:.\n")
+        print(f"{Fore.LIGHTYELLOW_EX}1."f"{Fore.LIGHTWHITE_EX} Adicionar Produto ao Estoque")
+        print(f"{Fore.LIGHTYELLOW_EX}2."f"{Fore.LIGHTWHITE_EX} Atualizar Produto no Estoque")
+        print(f"{Fore.LIGHTYELLOW_EX}3."f"{Fore.LIGHTWHITE_EX} Visualizar Estoque")
+        print(f"{Fore.LIGHTYELLOW_EX}4."f"{Fore.LIGHTWHITE_EX} Deletar Produto do Estoque")
+        print(f"{Fore.LIGHTYELLOW_EX}5."f"{Fore.LIGHTWHITE_EX} Pesquisar Produto no Estoque")
+        print(f"{Fore.LIGHTYELLOW_EX}6."f"{Fore.LIGHTWHITE_EX} Voltar ao Menu Principal")
+
+        opcao = int(input("Escolha uma opção: "))
+
+        if opcao == 1:
+            limpar_tela()
+            adicionar_produto()
+        elif opcao == 2:
+            limpar_tela()
+            atualizar_produto()
+        elif opcao == 3:
+            limpar_tela()
+            visualizar_estoque()
+        elif opcao == 4:
+            limpar_tela()
+            deletar_produto()
+        elif opcao == 5:
+            limpar_tela()
+            pesquisar_produto()
+        elif opcao == 6:
+            limpar_tela()
+            break
+        else:
+            print(f"{Fore.LIGHTRED_EX} Opção inválida! Tente novamente.")
+
+# # # === Menu cadastro === # # #
+
+def menu_cadastro():
+    while True:
+        print(f"{Fore.LIGHTBLACK_EX}:.:.:.:: "f"{Fore.BLUE}RC Eletronicos - Gerenciador Vendas Version 1.0.0 "f"{Fore.LIGHTBLACK_EX}::.:.:.:.")
+        print(f"{Fore.LIGHTBLACK_EX}         Desenvolvido por Rodrigo Couto version 1.0.0\n")
+        print(f"\n{Fore.LIGHTBLACK_EX}.:.:: "f"{Fore.BLUE}Cadastro Cliente "f"{Fore.LIGHTBLACK_EX}::.:.\n")
+        print(f"{Fore.LIGHTYELLOW_EX}1."f"{Fore.LIGHTWHITE_EX} Cadastro cliente")
+        print(f"{Fore.LIGHTYELLOW_EX}2."f"{Fore.LIGHTWHITE_EX} Atualizar cadastro")
+        print(f"{Fore.LIGHTYELLOW_EX}3."f"{Fore.LIGHTWHITE_EX} Consultar Cadastro")
+        print(f"{Fore.LIGHTYELLOW_EX}4."f"{Fore.LIGHTWHITE_EX} Excluir cadastro")
+        print(f"{Fore.LIGHTYELLOW_EX}5."f"{Fore.LIGHTWHITE_EX} Pesquisar cadastro")
+        print(f"{Fore.LIGHTYELLOW_EX}6."f"{Fore.LIGHTWHITE_EX} Voltar ao Menu Principal")
+
+        opcao = int(input("Escolha uma opção: "))
+
+        if opcao == 1:
+            limpar_tela()
+            cadastro_cliente()
+        elif opcao == 2:
+            limpar_tela()
+            atualizar_cadastro()
+        elif opcao == 3:
+            limpar_tela()
+            consultar_cadastro()
+        elif opcao == 4:
+            limpar_tela()
+            excluir_cadastro()
+        elif opcao == 5:
+            limpar_tela()
+            pesquisar_cadastro()
+        elif opcao == 6:
+            limpar_tela()
+            break
+        else:
+            print(f"{Fore.LIGHTRED_EX} Opção inválida! Tente novamente.")
+
+# # # === Menu principal === # # #
+
+def menu_principal():
+    while True:
+        print(f"{Fore.LIGHTBLACK_EX}:.:.:.:: "f"{Fore.BLUE}RC Eletronicos - Gerenciador Vendas Version 1.0.0 "f"{Fore.LIGHTBLACK_EX}::.:.:.:.")
+        print(f"{Fore.LIGHTBLACK_EX}         Desenvolvido por Rodrigo Couto version 1.0.0\n")
+        print(f"\n{Fore.LIGHTYELLOW_EX}1."f"{Fore.LIGHTWHITE_EX} Controle Vendas" )
+        print(f"{Fore.LIGHTYELLOW_EX}2."f"{Fore.LIGHTWHITE_EX} Controle Estoque")
+        print(f"{Fore.LIGHTYELLOW_EX}3."f"{Fore.LIGHTWHITE_EX} Cadastro Cliente")
+        print(f"{Fore.LIGHTYELLOW_EX}0."f"{Fore.LIGHTWHITE_EX} Sair")
+
+        opcao = int(input("Escolha uma opção: "))
+        if opcao == 1:
+            limpar_tela()
+            menu_vendas()
+        elif opcao == 2:
+            limpar_tela()
+            menu_estoque()
+        elif opcao == 3:
+            limpar_tela()
+            menu_cadastro()
+        elif opcao == 0:
+            print(f"{Fore.LIGHTYELLOW_EX}Saindo do programa...")
+            break
+        else:
+            print(f"{Fore.LIGHTRED_EX} Opção inválida! Tente novamente.")
+        
+if __name__ == "__main__":
+    ###### Dicionário para armazenar o estoque , clientee vendas #####
+    estoque = {}
+    cliente = {}
+    vendas = []
+
+    ###### Iniciar o programa #####
+    limpar_tela()
+    menu_principal()
